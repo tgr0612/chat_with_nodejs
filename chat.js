@@ -4,6 +4,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 connections = []; //소켓 연결된 횟수 알아볼때 쓸거.
+users=[]; //이름 저장할때 쓸꺼임.
 server.listen(process.env.PORT || 3000);
 console.log('3000번 포트에서 서버가 동작 중입니다.');
 app.get('/', function(req, res){
@@ -21,6 +22,15 @@ io.sockets.on('connection', function(socket){
 //index.html의  socket.emit('send message', $message.val()); 이벤트를  받는 부분을 만들자.
   socket.on('send message', function(data){
   console.log(data);
-  io.sockets.emit('new message', {msg:data});//다시 new message 이벤트를 보낸다.
+  io.sockets.emit('new message', {msg:data, user:socket.username});//다시 new message 이벤트를 보낸다.
 });
+//index.html의 socket.emit('new user', $username.val()); 이벤트를 받는 부분
+  socket.on('new user', function(data){
+  socket.username = data;
+  users.push(socket.username);
+  updateUsernames();
+});
+  function updateUsernames(){
+    io.sockets.emit('get users', users);
+  }
 });
