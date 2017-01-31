@@ -1,15 +1,46 @@
 <html>
   <head>
     <script src ="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <style>
+      body{
+        margin-top:30px;
+      }
+    </style>
     <script>
       $(function(){
         var socket = io.connect();
-      });
+        var $chat = $('#chat');
+        var $messageForm = $('#messageForm');
+        var $message = $('#message');
+
+        $messageForm.submit(function(e){
+          e.preventDefault();
+          socket.emit('send message', $message.val());
+          $message.val('');
+        });
+//chat.js의 io.sockets.emit('new message', {msg:data}) 를 받는다.
+        socket.on('new message', function(data){
+        $chat.append('<div class="well">'+data.msg+'</div>');
+          });
+        });
+
     </script>
   </head>
-
   <body>
-    하이요
+    <div class = "container">
+      <div class = "col-md-8">
+        <div class = "chat" id = "chat"></div><!--이곳에 글이 올라간다. -->
+        <form id = "messageForm">
+          <div class = "form-group">
+            <label>Enter Message</label>
+            <textarea class = "form-control" id = "message"></textarea>
+            <br/>
+            <input type = "submit" class = "btn btn-primary" value = "Send Message"/>
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
 </html>

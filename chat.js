@@ -15,7 +15,12 @@ io.sockets.on('connection', function(socket){
   console.log('connected : %s sockets connected', connections.length);
 //소켓 연결 해제 되면 connectons.length를 줄이자.
   socket.on('disconnect', function(){
-    connections.splice(connections.indexOf(socket),1);
-    console.log('disconnected : %s sockets connected', connections.length);
+  connections.splice(connections.indexOf(socket),1);
+  console.log('disconnected : %s sockets connected', connections.length);
   });
+//index.html의  socket.emit('send message', $message.val()); 이벤트를  받는 부분을 만들자.
+  socket.on('send message', function(data){
+  console.log(data);
+  io.sockets.emit('new message', {msg:data});//다시 new message 이벤트를 보낸다.
+});
 });
